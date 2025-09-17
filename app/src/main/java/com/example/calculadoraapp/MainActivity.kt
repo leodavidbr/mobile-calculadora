@@ -8,8 +8,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.calculadoraapp.R
+import java.lang.Math.log
+import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.math.sqrt
+import kotlin.math.log10 // Import for log operation
 
 class MainActivity : AppCompatActivity() {
     private lateinit var tvExpressao: TextView
@@ -123,14 +126,15 @@ class MainActivity : AppCompatActivity() {
             }
             currentInput = ""
         }
-
         // substitui operador se o usuário apertar operador duas vezes
-        val trimmed : String = expression.trimEnd()
-        val last : String = trimmed.lastOrNull().toString()
-        if (last != null && (ops.map { (string, i) -> string }).contains(last)) {
-            expression = trimmed.dropLast(1) + op + " "
+        val trimmed: String = expression.trimEnd()
+        val operatorList = ops.map { it.first }  // List of operators
+        val lastOperator = operatorList.filter { trimmed.endsWith(it) }.lastOrNull()  // Find the last operator
+
+        if (lastOperator != null) {
+            expression = trimmed.dropLast(lastOperator.length) + op + " "
         } else {
-            expression += " $op "
+            expression = "(" + expression + ")" + " $op "
         }
 
         pendingOp = op
@@ -181,9 +185,16 @@ class MainActivity : AppCompatActivity() {
             "+" -> a + b
             "-" -> a - b
             "×" -> a * b
-            "%" -> a % b
-            "√" -> sqrt(a)
-            "^" -> a.pow(b)
+            "%" -> a * b / 100 // Percentage operation
+            "√" -> if (b > 0) a.pow(1 / b) else {
+                Toast.makeText(this, "Raiz com índice inválido", Toast.LENGTH_SHORT).show()
+                0.0
+            }
+            "aᵇ" -> a.pow(b) // Power operation
+            "log" -> if (b > 0 && a > 0) ln(a) / ln(b) else {
+                Toast.makeText(this, "Logaritmo de número não positivo", Toast.LENGTH_SHORT).show()
+                0.0
+            }
             "÷" -> if (b == 0.0) {
                 Toast.makeText(this, "Divisão por zero", Toast.LENGTH_SHORT).show()
                 a
