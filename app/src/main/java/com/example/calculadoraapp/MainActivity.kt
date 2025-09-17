@@ -7,6 +7,9 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.calculadoraapp.R
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity() {
     private lateinit var tvExpressao: TextView
@@ -17,6 +20,30 @@ class MainActivity : AppCompatActivity() {
     private var pendingOp: String? = null
     private var expression: String = ""
     private var justComputed: Boolean = false
+    private val digits = listOf(
+        "0" to R.id.btn0,
+        "1" to R.id.btn1,
+        "2" to R.id.btn2,
+        "3" to R.id.btn3,
+        "4" to R.id.btn4,
+        "5" to R.id.btn5,
+        "6" to R.id.btn6,
+        "7" to R.id.btn7,
+        "8" to R.id.btn8,
+        "9" to R.id.btn9,
+        "." to R.id.btnPonto
+    )
+
+    private val ops = listOf(
+        "+" to R.id.btnSomar,
+        "-" to R.id.btnSubtrair,
+        "×" to R.id.btnMultiplicar,
+        "÷" to R.id.btnDividir,
+        "%" to R.id.btnPercent,
+        "aᵇ" to R.id.btnPow,
+        "√" to R.id.btnRoot,
+        "log" to R.id.btnLog
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,36 +52,23 @@ class MainActivity : AppCompatActivity() {
         tvExpressao = findViewById(R.id.txtExpressao)
         tvResultado = findViewById(R.id.txtResultado)
 
-        // botões dígitos
-        val digits = listOf(
-            "0" to R.id.btn0,
-            "1" to R.id.btn1,
-            "2" to R.id.btn2,
-            "3" to R.id.btn3,
-            "4" to R.id.btn4,
-            "5" to R.id.btn5,
-            "6" to R.id.btn6,
-            "7" to R.id.btn7,
-            "8" to R.id.btn8,
-            "9" to R.id.btn9,
-            "." to R.id.btnPonto
-        )
+        // Botões de dígitos
         digits.forEach { (digit, id) ->
             findViewById<Button>(id).setOnClickListener { appendDigit(digit) }
         }
 
-        val ops = listOf(
-            "+" to R.id.btnSomar,
-            "-" to R.id.btnSubtrair,
-            "×" to R.id.btnMultiplicar,
-            "÷" to R.id.btnDividir
-        )
+        // Botões de operações
         ops.forEach { (op, id) ->
             findViewById<Button>(id).setOnClickListener { onOperator(op) }
         }
 
+        // Botão igual
         findViewById<Button>(R.id.btnIgual).setOnClickListener { onEquals() }
+
+        // Botão limpar tudo
         findViewById<Button>(R.id.btnClear).setOnClickListener { clearAll() }
+
+        // Botão backspace
         findViewById<Button>(R.id.btnBackspace).setOnClickListener { backspace() }
 
         if (savedInstanceState != null) {
@@ -111,9 +125,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         // substitui operador se o usuário apertar operador duas vezes
-        val trimmed = expression.trimEnd()
-        val last = trimmed.lastOrNull()
-        if (last != null && (last == '+' || last == '-' || last == '×' || last == '÷')) {
+        val trimmed : String = expression.trimEnd()
+        val last : String = trimmed.lastOrNull().toString()
+        if (last != null && (ops.map { (string, i) -> string }).contains(last)) {
             expression = trimmed.dropLast(1) + op + " "
         } else {
             expression += " $op "
@@ -167,6 +181,9 @@ class MainActivity : AppCompatActivity() {
             "+" -> a + b
             "-" -> a - b
             "×" -> a * b
+            "%" -> a % b
+            "√" -> sqrt(a)
+            "^" -> a.pow(b)
             "÷" -> if (b == 0.0) {
                 Toast.makeText(this, "Divisão por zero", Toast.LENGTH_SHORT).show()
                 a

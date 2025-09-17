@@ -38,7 +38,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Grade de botões (mantive igual ao seu) -->
+    <!-- Grade de botões -->
     <GridLayout
         android:id="@+id/gridButtons"
         android:layout_width="0dp"
@@ -52,15 +52,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Seus botões (copie os que já tinha) -->
+        <!-- Linha 0 -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnClear"
+            android:id="@+id/btnPercent"
             style="@style/Widget.Material3.Button"
-            android:text="C" />
+            android:text="%" />
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnBackspace"
+            android:id="@+id/btnPow"
             style="@style/Widget.Material3.Button"
-            android:text="⌫" />
+            android:text="aᵇ" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRoot"
+            style="@style/Widget.Material3.Button"
+            android:text="√" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLog"
+            style="@style/Widget.Material3.Button"
+            android:text="log" />
+
+        <!-- Linha 1 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDividir"
             style="@style/Widget.Material3.Button"
@@ -69,7 +79,16 @@
             android:id="@+id/btnMultiplicar"
             style="@style/Widget.Material3.Button"
             android:text="×" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClear"
+            style="@style/Widget.Material3.Button"
+            android:text="C" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBackspace"
+            style="@style/Widget.Material3.Button"
+            android:text="⌫" />
 
+        <!-- Linha 2 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn7"
             style="@style/Widget.Material3.Button"
@@ -87,6 +106,7 @@
             style="@style/Widget.Material3.Button"
             android:text="-" />
 
+        <!-- Linha 3 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn4"
             style="@style/Widget.Material3.Button"
@@ -104,6 +124,7 @@
             style="@style/Widget.Material3.Button"
             android:text="+" />
 
+        <!-- Linha 4 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn1"
             style="@style/Widget.Material3.Button"
@@ -121,6 +142,7 @@
             style="@style/Widget.Material3.Button"
             android:text="=" />
 
+        <!-- Linha 5 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn0"
             style="@style/Widget.Material3.Button"
@@ -129,6 +151,5 @@
             android:id="@+id/btnPonto"
             style="@style/Widget.Material3.Button"
             android:text="." />
-
     </GridLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
