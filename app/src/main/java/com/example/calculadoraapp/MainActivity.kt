@@ -81,21 +81,25 @@ class MainActivity : AppCompatActivity() {
         // Botao historico
         findViewById<Button>(R.id.btnHistorico).setOnClickListener { mostrarHistorico() }
 
+        // Botão alternar tema
         val btnToggleTheme = findViewById<Button>(R.id.btnToggleTheme)
+
+        // Emoji de acordo com o tema atual
+        val currentNightMode = AppCompatDelegate.getDefaultNightMode()
+        btnToggleTheme.text = if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) "☀️" else "🌙"
+
         btnToggleTheme.setOnClickListener {
-            val currentNightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
-            when (currentNightMode) {
-                android.content.res.Configuration.UI_MODE_NIGHT_YES -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    btnToggleTheme.text = "🌙"
-                }
-                android.content.res.Configuration.UI_MODE_NIGHT_NO,
-                android.content.res.Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    btnToggleTheme.text = "☀️"
-                }
+            val modeNow = AppCompatDelegate.getDefaultNightMode()
+            if (modeNow == AppCompatDelegate.MODE_NIGHT_YES) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                btnToggleTheme.text = "🌙"
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                btnToggleTheme.text = "☀️"
             }
         }
+
+
 
         if (savedInstanceState != null) {
             currentInput = savedInstanceState.getString("currentInput", "")
