@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import kotlin.collections.isEmpty
 import kotlin.collections.toTypedArray
 import kotlin.math.ln
@@ -78,6 +79,22 @@ class MainActivity : AppCompatActivity() {
 
         // Botao historico
         findViewById<Button>(R.id.btnHistorico).setOnClickListener { mostrarHistorico() }
+
+        val btnToggleTheme = findViewById<Button>(R.id.btnToggleTheme)
+        btnToggleTheme.setOnClickListener {
+            val currentNightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+            when (currentNightMode) {
+                android.content.res.Configuration.UI_MODE_NIGHT_YES -> {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    btnToggleTheme.text = "🌙"
+                }
+                android.content.res.Configuration.UI_MODE_NIGHT_NO,
+                android.content.res.Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    btnToggleTheme.text = "☀️"
+                }
+            }
+        }
 
         if (savedInstanceState != null) {
             currentInput = savedInstanceState.getString("currentInput", "")

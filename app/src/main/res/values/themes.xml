@@ -8,5 +8,14 @@
         <item name="android:statusBarColor">?attr/colorPrimary</item>
     </style>
 
+    <style name="ButtonOperator" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/orange</item>
+        <item name="android:textColor">@color/cardview_dark_background</item>
+    </style>
+    <style name="ButtonEqual" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/cardview_dark_background</item>
+        <item name="android:textColor">@color/orange</item>
+    </style>
+
     <style name="Theme.CalculadoraApp" parent="Base.Theme.CalculadoraApp" />
 </resources>
