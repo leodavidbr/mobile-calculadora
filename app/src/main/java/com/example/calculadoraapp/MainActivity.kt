@@ -6,13 +6,12 @@ import android.util.TypedValue
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.calculadoraapp.R
-import java.lang.Math.log
+import kotlin.collections.isEmpty
+import kotlin.collections.toTypedArray
 import kotlin.math.ln
 import kotlin.math.pow
-import kotlin.math.sqrt
-import kotlin.math.log10 // Import for log operation
 
 class MainActivity : AppCompatActivity() {
     private lateinit var tvExpressao: TextView
@@ -48,6 +47,9 @@ class MainActivity : AppCompatActivity() {
         "log" to R.id.btnLog
     )
 
+    private var historico = ArrayList<String>()
+    private val MAX_HISTORY_SIZE = 20
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -74,6 +76,9 @@ class MainActivity : AppCompatActivity() {
         // Botão backspace
         findViewById<Button>(R.id.btnBackspace).setOnClickListener { backspace() }
 
+        // Botao historico
+        findViewById<Button>(R.id.btnHistorico).setOnClickListener { mostrarHistorico() }
+
         if (savedInstanceState != null) {
             currentInput = savedInstanceState.getString("currentInput", "")
             val opnd = savedInstanceState.getDouble("operand", Double.NaN)
@@ -81,6 +86,7 @@ class MainActivity : AppCompatActivity() {
             pendingOp = savedInstanceState.getString("pendingOp")
             expression = savedInstanceState.getString("expression", "")
             justComputed = savedInstanceState.getBoolean("justComputed", false)
+            historico.addAll(savedInstanceState.getStringArrayList("history") ?: ArrayList())
         }
 
         // destaque inicial: expressão em destaque, resultado normal
@@ -88,6 +94,60 @@ class MainActivity : AppCompatActivity() {
         highlightResult(false)
 
         updateDisplay()
+    }
+    private fun mostrarHistorico() {
+        if (historico.isEmpty()) {
+            Toast.makeText(this, "Historico vazio", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val historyArray = historico.toTypedArray()
+
+        AlertDialog.Builder(this)
+            .setTitle("Histórico de Cálculos")
+            .setItems(historyArray) { dialog, which ->
+                val selectedEntry = historyArray[which]
+                carregarCalculoDoHistorico(selectedEntry)
+                dialog.dismiss()
+            }
+            .setPositiveButton("Fechar") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setNegativeButton("Limpar historico.clearHistorico") { dialog, _ ->
+                historico.clear()
+                Toast.makeText(this, "Historico limpo!", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .show()
+    }
+    private fun carregarCalculoDoHistorico(historyEntry: String) {
+        val parts = historyEntry.split("=")
+        if (parts.isEmpty()) {
+            Toast.makeText(this, "Formato de histórico inválido", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val expressionFromHistory = parts[0].trim()
+        val resultFromHistory = if (parts.size > 1) parts[1].trim() else null
+
+        if (resultFromHistory != null) {
+            val resultValue = resultFromHistory.toDoubleOrNull()
+            if (resultValue != null) {
+                clearAll()
+                currentInput = stripTrailingZero(resultValue)
+                expression = currentInput
+                operand = null
+                pendingOp = null
+                justComputed = true
+                highlightExpression(false)
+                highlightResult(true)
+                updateDisplay()
+            } else {
+                Toast.makeText(this, "Não foi possível carregar o resultado do histórico", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        Toast.makeText(this, "Cálculo carregado: $expressionFromHistory", Toast.LENGTH_SHORT).show()
     }
 
     private fun appendDigit(d: String) {
@@ -165,8 +225,14 @@ class MainActivity : AppCompatActivity() {
             val result = performOperation(operand!!, b, pendingOp)
 
             // expressão fica no topo (sem '='); resultado abaixo com '=' na frente
-            tvExpressao.text = expression.trim()
-            tvResultado.text = "= ${stripTrailingZero(result)}"
+            val textoExpressao = expression.trim()
+            val textoResultado = stripTrailingZero(result)
+
+            val entradaHistorico = "$textoExpressao = $textoResultado"
+            adicionarEntradaHistorico(entradaHistorico)
+
+            tvExpressao.text = textoExpressao
+            tvResultado.text = "= $textoResultado"
 
             // prepara estado para próximo uso
             currentInput = stripTrailingZero(result)
@@ -179,7 +245,12 @@ class MainActivity : AppCompatActivity() {
             highlightResult(true)
         }
     }
-
+    private fun adicionarEntradaHistorico(entry: String) {
+        if (historico.size >= MAX_HISTORY_SIZE) {
+            historico.removeAt(0)
+        }
+        historico.add(entry)
+    }
     private fun performOperation(a: Double, b: Double, op: String?): Double {
         return when (op) {
             "+" -> a + b
@@ -224,6 +295,7 @@ class MainActivity : AppCompatActivity() {
         pendingOp = null
         expression = ""
         justComputed = false
+        historico = ArrayList()
         highlightExpression(true)
         highlightResult(false)
         updateDisplay()
@@ -291,5 +363,6 @@ class MainActivity : AppCompatActivity() {
         outState.putString("pendingOp", pendingOp)
         outState.putString("expression", expression)
         outState.putBoolean("justComputed", justComputed)
+        outState.putStringArrayList("history", historico)
     }
 }
