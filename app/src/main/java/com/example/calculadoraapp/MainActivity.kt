@@ -8,7 +8,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import kotlin.collections.isEmpty
 import kotlin.collections.toTypedArray
 import kotlin.math.ln
 import kotlin.math.pow
@@ -22,6 +21,9 @@ class MainActivity : AppCompatActivity() {
     private var pendingOp: String? = null
     private var expression: String = ""
     private var justComputed: Boolean = false
+    private var historico = ArrayList<String>()
+    private val MAX_HISTORY_SIZE = 20
+
     private val digits = listOf(
         "0" to R.id.btn0,
         "1" to R.id.btn1,
@@ -47,8 +49,6 @@ class MainActivity : AppCompatActivity() {
         "log" to R.id.btnLog
     )
 
-    private var historico = ArrayList<String>()
-    private val MAX_HISTORY_SIZE = 20
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,20 +107,20 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Histórico de Cálculos")
             .setItems(historyArray) { dialog, which ->
                 val selectedEntry = historyArray[which]
-                carregarCalculoDoHistorico(selectedEntry)
+                carregarHistorico(selectedEntry)
                 dialog.dismiss()
             }
             .setPositiveButton("Fechar") { dialog, _ ->
                 dialog.dismiss()
             }
-            .setNegativeButton("Limpar historico.clearHistorico") { dialog, _ ->
+            .setNegativeButton("Limpar historico") { dialog, _ ->
                 historico.clear()
                 Toast.makeText(this, "Historico limpo!", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
             .show()
     }
-    private fun carregarCalculoDoHistorico(historyEntry: String) {
+    private fun carregarHistorico(historyEntry: String) {
         val parts = historyEntry.split("=")
         if (parts.isEmpty()) {
             Toast.makeText(this, "Formato de histórico inválido", Toast.LENGTH_SHORT).show()
